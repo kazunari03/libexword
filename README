@@ -1,97 +1,124 @@
-Description
+このREADMEは、brijohn氏が作成したものを日本語に翻訳したものです。最新のソースコードと原文に関しては
+このツールの開発者であるbrijohn氏のリポジトリで取得することができます。
+
+https://github.com/brijohn/libexword
+
+libexword
 =========================
 
-libexword is a library that implements the low-level OBEX commands
-used to communicate Casio EX-word dictionaries. 
+libexwordは、低レベルのOBEXプロトコルを使用してCASIO製電子辞書EX-wordと通信するためのライブラリです。
+このライブラリに付属するexwordコマンドでは、辞書上のファイルを操作することができます。
 
-This library comes with a program called exword that uses libexword
-to allow manipulation of files on the dictionary.
+機能:
+	* デバイス上のファイルの表示
+	* デバイスにファイルをアップロード・ダウンロードする
+	* ファイルを削除
+	* 追加コンテンツ(追加辞書)の追加・削除
 
-Features:
-	* list files on device
-	* upload/download files
-	* delete files
-	* install/remove add-on dictionaries
-
+注意:
+	* libexwordはEX-Word dataplusシリーズ専用の非公式ツールです。使用することで発生するあらゆる
+	　問題について一切の責任を負わないものとします。
+	* 電子辞書内のあらゆるシステムファイル、SDカードあるいはCD-ROMで供給される追加コンテンツをインタ
+	　ーネット上に公開しないでください。
 
 Commands
 ==========================
 
 connect [mode] [region]
-	This command connects to an attached EX-word dictionary. It
-	accepts two optional parameters the first specifies the connection
-	mode and be bee either library, text, or cd. The second one is the
-	region of your dictionary and is a two letter country code.
+	connect コマンドは、接続されているEX-word電子辞書に接続します。
+　　　　- オプションの[mode]には、EX-wordを接続する動作モードを指定します。
+        	library EX-wordをライブラリ モードとして接続
+        	text    EX-wordをテキストローダー モードとして接続
+        	cd　　　EX-wordをCDローダー モードとして接続
 
-	The default values for mode and region are library and ja.
+　　　  - オプションの[region]には、EX-wordの国コードを指定します。
+	  デフォルトの値はja(日本)が指定されています。
 
 disconnect
-	This command simply disconnects from the currently connected dictionary.
-
+	disconnect コマンドは、接続されている電子辞書を切断します。
+	
 model
-	This command displays the raw model information about connected device.
-
+	model コマンドは、接続された電子辞書のモデル番号を表示します。
+　　
 capacity
-	This command displays the capacity of the currently selected storage medium.
+	capacityコマンドは、現在選択しているストレージの容量を表示します。
 
 format
-	This command will format the currently inserted SD card.
+        format コマンドは、電子辞書に挿入されたSDカードを電子辞書で使用するためにフォーマットします。
+	なお、SDカードを接続されている電子辞書で初めて使用する場合には必ずフォーマットが必要です。
 
 list
-	This command will list all files and directories in your current directory.
-
+        list コマンドは、lsコマンドのようにカレントディレクトリの内容を表示します。
+	
 delete <filename>
-	This command deletes deletes the specified file from the currently set
-	directory on the connected device
-
+	delete コマンドは、電子辞書のカレントディレクトリ内のファイルを削除します。
+	
 send <filename>
-	This command will upload a file to the connected device. <filename> should
-	specifiy the fullpath to the file on your local filesystem.
-
+	sendコマンドは、ローカルに保存されているファイルを電子辞書に送信します。<filename>には
+	ファイルの完全なパスを指定する必要があります。
+	
 get <filename>
-	This command will download a file from the connected device. <filename> should
-	specifiy the fullpath on your local filesystem where the file should be saved.
+	getコマンドは、電子辞書内のファイルをローカルにダウンロードします。<filename>にはファイル
+	完全なパスを指定する必要があります。
 
 setpath <path>
-	This sets the current path on your dictionary. The path is set using the
-	following format: <sd|mem://path>.
+	setpathコマンドは、cdコマンドのように、カレントディレクトリのパスを指定します。
+	<path> は以下のように指定する必要があります。
+
+	本体メモリーのrootに移動
+	setpath drv0:///
+
+	SDカードのrootに移動
+	setpath crd0:///
+	Tips:2つのカードスロットを搭載しているモデルに関してはcrd0,crd1を適宜指定
 
 set <option> [value]
-	This command sets various configutation options. If not value is given for the
-	specified option its current value is printed out. 
-
+	setコマンドは、さまざまなオプションを設定することができます。何も指定されていない場合は
+	デフォルトの設定値が返されます
+	
 	Options:
-		debug - This option sets the debug level (0-5)
-		mkdir - This option tells setpath if it should create non-existent directories (yes|no)
+		debug - デバッグ レベルを指定します(0-5の間) 
+		
+		mkdir - setpath コマンドで存在しないディレクトリを作成するか指定します (yes|no)
+		
 
 dict <sub-function>
-	This command is used to manage installed add-on dictionaries. It only works
-	when connected in library mode.
+	dict コマンドは、追加辞書の管理に使用します。これらは、電子辞書がライブラリー モードで接続されている
+	必要があります。
 
-	Subfunctions:
+	<sub-function>は以下の値を指定します:
 		reset <username>
-			This will reset your authentication information using the specified
-			username. When finished it will display the new authkey as well as
-			save the username/authkey pair to users.dat file. It also deletes any
-			already installed add-ons.
+			resetコマンドは、電子辞書の接続に使用する認証情報を再設定します。<username>
+			には好みの文字列を指定します。再設定をおこなうとusername/authkeyが出力され
+			ます。なお、すでに追加されているコンテンツは動作しなくなるため再度インストール
+			する必要があります。username/authkeyはusers.datに保存されます。
 
 		auth <username> [key]
-			This peforms authentication and must be called before any other subfunction
-			except for list and reset. If key is not specified it will try to find the
-			username in the users.dat file.
-
+			authコマンドは、dictコマンドのlist,reset以外の機能を使用するために最初に実行する
+			必要があります。<username>には、resetコマンドで登録したものを使用します。[key]は、
+			resetで出力されたauthkeyを入力します。入力しない場合は、それらをusers.datから読み
+			出して認証します。
+			
 		list [local|remote]
-			This command will list all local dictionaries if local is specified or, if
-			remote is specified it will list remote dictionaries. The default is remote.
+			listコマンドは、PCまたは電子辞書に保存されている追加辞書をリスト表示します。
+
+				local PCに保存された追加辞書を表示
+				remote 電子辞書に保存された追加辞書を表示
+			
+				※デフォルトの値はremoteが指定されています。
 
 		decrypt <id>
-			This downloads and decrypts the dictionary with the specified id.
-
+			decryptは、電子辞書に保存された追加辞書をPCにダウンロードし復号化します。
+			<id>には、辞書idを指定します。
+	
 		remove <id>
-			This deletes the dictionary with the specified id.
+			removeコマンドは、電子辞書に保存された追加辞書を削除します。
+			<id>には、辞書idを指定します。
 
 		install <id>
-			This will install the dictionary with the specified id.
+			installコマンドは、PCに保存された追加辞書を電子辞書にインストールします。
+			<id>には、辞書idを指定します。
 
-
+			なお、追加辞書はPCの以下の場所に配置する必要があります。
+			$HOME/.local/share/exword/ja
 
